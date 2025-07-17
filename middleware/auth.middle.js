@@ -18,7 +18,13 @@ exports.protect = (req, res, next) => {
 }
 
 exports.authorizeAdmin= (req,res,next)=>{
-    if(req.user.role !== 'admin') return res.status(403).json({msg:'admin only'})
+    if(req.user.role !== 'admin') return res.status(403).json({error:'admin only'})
+
+    next();
+}
+
+exports.aurhorizeStudent = (req,res,next)=>{
+    if(req.user.role !== 'student') return res.status(403).json({error: 'student only'})
 
     next();
 }

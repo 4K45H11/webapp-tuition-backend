@@ -1,13 +1,25 @@
 const jwt = require('jsonwebtoken')
 const User = require('../models/User.model')
+const Token = require('../models/Token.model')
 
-function generateToken(user) {
-    return jwt.sign(
-        { id: user._id, role: user.role },
-        process.env.JWT_SECRET,
-        { expiresIn: '1h' }
-    )
-};
+const { generateAccessToken, generateRefreshToken } = require('../util/token.util')
+
+
+
+//helper function
+const sendTokens = async (user, res) => {
+    const refreshToken = generateRefreshToken(user);
+    //save the refresh token in database
+    await Token.create({ userId: user._id, token: refreshToken })
+
+    res.cookie('refreshToken', refreshToken, {
+        httpOnly: true,
+        sameSite: "Strict",
+        secure: false,//true in production time(https)
+        maxAge: 24 * 60 * 60 * 1000
+    })
+        .json({ accessToken: generateAccessToken(user) })
+}
 
 exports.register = async (req, res) => {
     const { name, email, password, role } = req.body;
@@ -22,7 +34,8 @@ exports.register = async (req, res) => {
 
         const newSavedUser = await User.create({ name, email, password, role })
 
-        res.status(201).json({ message: 'new user created' })
+
+        await sendTokens(newSavedUser, res)
 
     } catch (error) {
         res.status(500).json({ error: error.message })
@@ -37,9 +50,35 @@ exports.login = async (req, res) => {
             return res.status(401).json({ error: 'invalid credentials' })
         }
 
-        res.status(200).json({ token: generateToken(user) })
+        await sendTokens(user, res)
 
     } catch (error) {
         res.status(500).json({ msg: "Server Error", error: err.message });
     }
 }
+
+exports.refreshToken = async (req, res) => {
+    const token = req.cookies.refreshToken;
+    if (!token) return res.status(401).json({ error: 'No refresh token' });
+
+    const exists = await Token.findOne({ token })
+
+    if (!exists) return res.status(403).json({ error: 'Token not found' });
+
+    try {
+        const decoded = jwt.verify(token, process.env.JWT_REFRESH_SECRET);
+
+        const user = await User.findById(decoded.id);
+        if(!user) throw new Error('Invalid token user')
+
+        res.json({accessToken:generateAccessToken(user)})
+    } catch (error) {
+        res.status(403).json({error:error.message})
+    };
+}
+
+exports.logout = async (req,res)=>{
+    const token = req.cookies.refreshToken;
+    if(token) await Token.findOneAndDelete({token})
+    res.clearCookie("refreshToken").json({message:'Logged out'})
+};
