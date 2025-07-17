@@ -16,6 +16,8 @@ app.get('/',(req,res)=>{
     res.status(200).json('Welcome to the tution server.')
 })
 app.use('/auth',require('./routes/auth.route'))
+app.use('/protected',require('./routes/protected.route'))
+app.use('/test',require('./routes/test.route'))
 
 mongoose.connect(process.env.MONGODB)
 .then(()=>{

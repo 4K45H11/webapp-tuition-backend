@@ -2,8 +2,8 @@ const jwt = require('jsonwebtoken')
 
 exports.protect = (req, res, next) => {
 
-    const token = req.header.authorization?.split(' ')[1]
-    if (!token) return res.status(401).json({ error: 'no token access denied' });
+    const token = req.headers.authorization?.split(' ')[1]
+    if (!token) return res.status(401).json({ error: 'no token ,access denied' });
 
     try {
 
@@ -23,7 +23,7 @@ exports.authorizeAdmin= (req,res,next)=>{
     next();
 }
 
-exports.aurhorizeStudent = (req,res,next)=>{
+exports.authorizeStudent = (req,res,next)=>{
     if(req.user.role !== 'student') return res.status(403).json({error: 'student only'})
 
     next();

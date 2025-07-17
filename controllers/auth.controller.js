@@ -18,14 +18,14 @@ const sendTokens = async (user, res) => {
         secure: false,//true in production time(https)
         maxAge: 24 * 60 * 60 * 1000
     })
-        .json({ accessToken: generateAccessToken(user) })
+    .json({ accessToken: generateAccessToken(user) })
 }
 
 exports.register = async (req, res) => {
     const { name, email, password, role } = req.body;
 
     try {
-        const exists = User.find({ email });
+        const exists = await User.findOne({ email });
         if (exists) {
             return res.status(400).json({ error: 'User already exists' });
         }
@@ -45,7 +45,7 @@ exports.register = async (req, res) => {
 exports.login = async (req, res) => {
     const { email, password } = req.body
     try {
-        const user = await User.find({ email })
+        const user = await User.findOne({ email })
         if (!user || (await user.matchPassword(password))) {
             return res.status(401).json({ error: 'invalid credentials' })
         }
