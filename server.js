@@ -21,6 +21,9 @@ app.use('/protected',require('./routes/protected.route'))
 app.use('/test',require('./routes/test.route'))
 app.use('/videos',require('./routes/video.route'))
 app.use('/doubts',require('./routes/doubt.route'))
+app.use('dashboard',require('./routes/dashboard.route'))
+app.use('/payments',require('./routes/payment.route'))
+
 
 mongoose.connect(process.env.MONGODB)
 .then(()=>{

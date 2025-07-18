@@ -18,6 +18,8 @@ const testSchema = new mongoose.Schema({
 
     isPaid: {type:Boolean,default:false},
 
+    price: Number,
+
     createdBy: {
         type:mongoose.Schema.Types.ObjectId,
         ref:'TutionUser',
