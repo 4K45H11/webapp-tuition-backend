@@ -23,6 +23,8 @@ app.use('/videos',require('./routes/video.route'))
 app.use('/doubts',require('./routes/doubt.route'))
 app.use('dashboard',require('./routes/dashboard.route'))
 app.use('/payments',require('./routes/payment.route'))
+app.use('/performence',require('./routes/performence.route'))
+app.use('/admin',require('./routes/admin.route'))
 
 
 mongoose.connect(process.env.MONGODB)

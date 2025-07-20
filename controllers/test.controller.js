@@ -148,7 +148,7 @@ exports.getResult = async(req,res)=>{
 
 exports.getGlobalRanking = async(req,res)=>{
     try {
-        const rankings = await Submission.findOne({
+        const rankings = await Submission.find({
             test:req.params.id,
             isRanked: true
         }).sort({score: -1,timeTaken:1})
