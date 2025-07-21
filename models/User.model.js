@@ -8,7 +8,8 @@ const userSchema = new mongoose.Schema({
     },
     email:{
         type: String,
-        required : true
+        required : true,
+        unique:true
     },
     password:{
         type:String,
@@ -23,10 +24,12 @@ const userSchema = new mongoose.Schema({
 });
 
 //hashing the password before saving
-userSchema.pre('save',async function () {
+userSchema.pre('save',async function (next) {
     if(!this.isModified("password")) return;
 
     this.password = await bcrypt.hash(this.password,10)
+
+    next()
 });
 
 //predefined userSchema method for matching password

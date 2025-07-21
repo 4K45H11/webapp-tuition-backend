@@ -18,7 +18,10 @@ const sendTokens = async (user, res) => {
         secure: false,//true in production time(https)
         maxAge: 24 * 60 * 60 * 1000
     })
-    .json({ accessToken: generateAccessToken(user) })
+    .json({
+         accessToken: generateAccessToken(user), 
+         role: user.role
+        })
 }
 
 exports.register = async (req, res) => {
@@ -46,7 +49,7 @@ exports.login = async (req, res) => {
     const { email, password } = req.body
     try {
         const user = await User.findOne({ email })
-        if (!user || (await user.matchPassword(password))) {
+        if (!user || !(await user.matchPassword(password))) {
             return res.status(401).json({ error: 'invalid credentials' })
         }
 
