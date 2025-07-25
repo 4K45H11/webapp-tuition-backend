@@ -2,12 +2,19 @@ const Doubt = require('../models/Doubt.model')
 
 exports.askDoubt = async(req,res)=>{
     const doubt = await Doubt.create({
-        student: req.use.id,
+        student: req.user.id,
         question:req.body.question
     });
 
     res.status(201).json(doubt);
 };
+
+exports.deleteDoubt = async(req,res)=>{
+    const studId = req.user.id;
+    const doubt = await Doubt.findOneAndDelete({student:studId})
+
+    if(doubt) res.status(200).json({msg: 'deleted doubt successfully.'})
+}
 
 exports.answerDoubt = async(req,res)=>{
     const doubt = await Doubt.findByIdAndUpdate(req.params.id,

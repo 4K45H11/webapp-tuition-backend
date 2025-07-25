@@ -16,7 +16,7 @@ exports.uploadVideo = async (req, res) => {
 
 exports.getAllVideos = async (req, res) => {
     try {
-        const videos = Video.find().sort({ createdAt: -1 });
+        const videos = await Video.find().sort({ createdAt: -1 });
         res.json(videos)
     } catch (error) {
         res.status(500).json({ error: error.message })
